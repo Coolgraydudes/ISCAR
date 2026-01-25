@@ -11,13 +11,13 @@ export default function CameraRail() {
 
   const keyframes = useRef([
     {
-      time: 10,
-      position: new THREE.Vector3(0, 300, 250),
+      time: 5,
+      position: new THREE.Vector3(0, 150, 250),
       lookAt: new THREE.Vector3(10, 0, 0),
     },
     {
       time: 20,
-      position: new THREE.Vector3(-80, 40, 120),
+      position: new THREE.Vector3(0, 140, 120),
       lookAt: new THREE.Vector3(0, 20, 0),
     },
   ]);

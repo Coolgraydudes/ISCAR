@@ -5,6 +5,7 @@ import { useRef, useEffect } from "react";
 import CameraRail from "./CameraRail";
 import Water from "./Water";
 import CameraLook from "./CameraLook";
+import CloudGroup from "./CloudGroup";
 
 function Lights() {
   const dirLight = useRef();
@@ -22,12 +23,12 @@ function Lights() {
       <directionalLight
         ref={dirLight}
         intensity={2}
-        position={[0, 10, 6]}
+        position={[0, 200, 100]}
         castShadow
       />
       <directionalLight
         intensity={0.5}
-        position={[-5, 5, 2]}
+        position={[-100, 50, 50]}
         color="#88aaff"
       />
     </>
@@ -42,6 +43,7 @@ export default function Scene() {
     >
       <Lights />
       <Water />
+      <CloudGroup />
       <CameraRail />
       <CameraLook />
     </Canvas>
