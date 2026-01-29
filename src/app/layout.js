@@ -2,13 +2,13 @@ import "./globals.css";
 
 export const metadata = {
   metadataBase: new URL("https://iscar.vercel.app"),
-  title: "ISCAR 2026 ©",
+  title: "ISCAR",
   description:
-    "Official website of ISCAR 2026. Wadah aspirasi, kreativitas, dan informasi terkini seputar kegiatan siswa dan organisasi OSIS.",
+    "Official website of ISCAR. Wadah aspirasi, kreativitas, dan informasi terkini seputar kegiatan siswa dan organisasi OSIS.",
 
   keywords: [
       "ISCAR",
-      "ISCAR 2026",
+      "ISCAR",
       "OSIS",
       "Organisasi Siswa",
       "Website Sekolah",
@@ -18,8 +18,8 @@ export const metadata = {
     ],
 
   authors: [{ name: "ISCAR IT Department" }],
-  creator: "ISCAR 2026",
-  publisher: "ISCAR 2026",
+  creator: "ISCAR",
+  publisher: "ISCAR",
 
   robots: "index, follow",
 
@@ -31,16 +31,16 @@ export const metadata = {
     type: "website",
     locale: "id_ID",
     url: "https://iscar.vercel.app",
-    siteName: "ISCAR 2026",
-    title: "ISCAR 2026 — Bergerak Bersama, Berkarya Nyata",
+    siteName: "ISCAR",
+    title: "ISCAR — Bergerak Bersama, Berkarya Nyata",
     description:
-      "Pantau terus informasi terbaru mengenai program kerja dan kegiatan seru dari ISCAR 2026 di sini.",
+      "Pantau terus informasi terbaru mengenai program kerja dan kegiatan seru dari ISCAR di sini.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ISCAR 2026 Preview",
+        alt: "ISCAR Preview",
       },
     ],
   },

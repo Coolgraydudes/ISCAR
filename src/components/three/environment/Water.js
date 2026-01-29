@@ -1,6 +1,7 @@
 "use client";
 
 import { useFrame, useThree } from "@react-three/fiber";
+import { useRef } from "react";
 import { useMemo } from "react";
 import { useTexture, useCubeTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -21,6 +22,8 @@ export default function Water() {
     dt.type = THREE.UnsignedShortType;
     return dt;
   }, []);
+
+  const waterRef = useRef();
 
   const renderTarget = useMemo(() => {
     const rt = new THREE.WebGLRenderTarget(
@@ -54,6 +57,11 @@ export default function Water() {
     uniforms.uTime.value = clock.getElapsedTime();
     uniforms.uCameraPos.value.copy(camera.position);
 
+    if (waterRef.current) {
+    waterRef.current.position.x = camera.position.x;
+    waterRef.current.position.z = camera.position.z;
+  }
+
     gl.setRenderTarget(renderTarget);
     gl.render(scene, camera);
     gl.setRenderTarget(null);
@@ -61,9 +69,10 @@ export default function Water() {
 
   return (
     <mesh
-      rotation-x={-Math.PI / 2}
-      position={[0, -1, 0]}
-      frustumCulled={false}
+    ref={waterRef}
+    rotation-x={-Math.PI / 2}
+    position={[0, -1, 0]}
+    frustumCulled={false}
     >
       <planeGeometry args={[400, 400, 512, 512]} />
       <shaderMaterial
@@ -130,6 +139,8 @@ export default function Water() {
               n1 * mix(0.35, 0.18, fade) +
               n2 * mix(0.22, 0.10, fade)
             );
+
+            normal = normalize(mix(normal, vec3(0.0, 1.0, 0.0), fade));
 
             vec2 screenUV = vClipPos.xy / vClipPos.w * 0.5 + 0.5;
             float sceneDepth = texture2D(uDepthTexture, screenUV).r;
