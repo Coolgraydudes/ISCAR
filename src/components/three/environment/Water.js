@@ -3,8 +3,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useRef } from "react";
 import { useMemo } from "react";
+import { useEffect } from "react";
 import { useTexture, useCubeTexture } from "@react-three/drei";
 import * as THREE from "three";
+
 
 export default function Water() {
   const { camera, gl, scene } = useThree();
@@ -49,23 +51,49 @@ export default function Water() {
       uDepthTexture: { value: renderTarget.depthTexture },
       uNear: { value: camera.near },
       uFar: { value: camera.far },
+
+      uIsDepthPass: { value: false },
     }),
     [normalMap, envMap, depthTexture, camera]
   );
+
   
+  useEffect(() => {
+  if (waterRef.current) {
+    waterRef.current.layers.set(1); // ⬅️ WATER DI LAYER 1
+  }
+  }, []);
   useFrame(({ clock }) => {
     uniforms.uTime.value = clock.getElapsedTime();
     uniforms.uCameraPos.value.copy(camera.position);
 
     if (waterRef.current) {
-    waterRef.current.position.x = camera.position.x;
-    waterRef.current.position.z = camera.position.z;
-  }
+      waterRef.current.position.x = camera.position.x;
+      waterRef.current.position.z = camera.position.z;
+    }
 
+    camera.layers.set(0);
     gl.setRenderTarget(renderTarget);
+    gl.clear();
     gl.render(scene, camera);
     gl.setRenderTarget(null);
+
+    uniforms.uIsDepthPass.value = true;
+
+    camera.layers.set(0);
+    gl.setRenderTarget(renderTarget);
+    gl.clear();
+    gl.render(scene, camera);
+    gl.setRenderTarget(null);
+
+    uniforms.uIsDepthPass.value = false;
+
+    camera.layers.enable(0);
+    camera.layers.enable(1);
+    camera.layers.enable(2);
   });
+
+
 
   return (
     <mesh
@@ -115,6 +143,7 @@ export default function Water() {
           uniform sampler2D uDepthTexture;
           uniform float uNear;
           uniform float uFar;
+          uniform bool uIsDepthPass;
           varying vec3 vWorldPos;
           varying vec4 vClipPos;
           varying vec3 vNormal;

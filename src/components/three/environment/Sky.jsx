@@ -39,7 +39,10 @@ return new THREE.ShaderMaterial({
   }, []);
 
   return (
-    <mesh scale={500} renderOrder={-1}>
+    <mesh 
+    scale={500}
+    renderOrder={-1}
+    frustumCulled={false}>
       <sphereGeometry args={[1, 32, 32]} />
       <primitive object={material} attach="material" />
     </mesh>

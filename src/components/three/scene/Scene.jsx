@@ -6,8 +6,9 @@ import { useRef, useEffect } from "react";
 import CameraRail from "../camera/CameraRail";
 import CameraLook from "../camera/CameraLook";
 import Water from "../environment/Water";
-// import CloudGroup from "../environment/CloudGroup";
 import Sky from "../environment/Sky";
+import CloudGroup from "../environment/CloudGroup";
+
 
 function Lights() {
   const dirLight = useRef();
@@ -42,15 +43,17 @@ function Lights() {
 export default function Scene() {
   return (
     <Canvas
-      camera={{ position: [0, 2, 6], fov: 60 }}
+      camera={{ position: [0, 2, 6], fov: 60, near: 0.1, far: 2000,}}
       style={{ position: "fixed", inset: 0 }}
     >
+
       <Sky />
       <Lights />
+      <CloudGroup />
       <Water />
-      {/* <CloudGroup /> */}
       <CameraRail />
       <CameraLook />
     </Canvas>
   );
 }
+
