@@ -8,7 +8,7 @@ export default function CloudGroup() {
     <Suspense fallback={null}>
       <Cloud
         seed={1}
-        position={[0, 150, -360]}
+        position={[0, 450, -360]}
         scale={45}
         speed={0.2}
         opacity={0.85}
@@ -21,7 +21,7 @@ export default function CloudGroup() {
 
       <Cloud
         seed={2}
-        position={[120, 150, -400]}
+        position={[120, 450, -400]}
         scale={55}
         speed={0.25}
         opacity={0.8}
@@ -34,7 +34,7 @@ export default function CloudGroup() {
 
       <Cloud
         seed={3}
-        position={[-140, 150, -380]}
+        position={[-140, 450, -380]}
         scale={50}
         speed={0.15}
         opacity={0.9}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useRef, useEffect } from "react";
 
 import CameraRail from "../camera/CameraRail";
@@ -40,12 +40,24 @@ function Lights() {
   );
 }
 
+function CameraLayerSetup() {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    camera.layers.enable(0);
+    camera.layers.enable(2);
+  }, [camera]);
+
+  return null;
+}
+
 export default function Scene() {
   return (
     <Canvas
       camera={{ position: [0, 2, 6], fov: 60, near: 0.1, far: 2000,}}
       style={{ position: "fixed", inset: 0 }}
     >
+      <CameraLayerSetup />
 
       <Sky />
       <Lights />
