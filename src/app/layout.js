@@ -1,4 +1,5 @@
 import "./globals.css";
+import Providers from "@/components/layout/Providers";
 
 export const metadata = {
   metadataBase: new URL("https://iscar.vercel.app"),
@@ -79,7 +80,11 @@ icons: {
 export default function RootLayout({ children }) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }
