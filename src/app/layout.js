@@ -1,5 +1,6 @@
 import "./globals.css";
 import Providers from "@/components/layout/Providers";
+import SplashScreen from "@/components/ui/SplashScreen";
 
 export const metadata = {
   metadataBase: new URL("https://iscar.vercel.app"),
@@ -82,6 +83,7 @@ export default function RootLayout({ children }) {
     <html lang="id" suppressHydrationWarning>
       <body>
         <Providers>
+          <SplashScreen />
           {children}
         </Providers>
       </body>

@@ -9,15 +9,7 @@ export default function IntroUI({ onClick }) {
   const { introReady, loadingDone } = useIntro();
   const [hovered, setHovered] = useState(false);
 
-  if (!loadingDone) {
-    return (
-      <div className="fixed inset-0 z-30 flex items-center justify-center bg-black text-white">
-        <span className="text-xs opacity-70 tracking-widest">
-          LOADING MAP
-        </span>
-      </div>
-    );
-  }
+  if (!loadingDone || !introReady) return null;
 
   if (!introReady) return null;
 
