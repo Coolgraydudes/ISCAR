@@ -10,6 +10,8 @@ export default function IntroUI() {
     loadingDone,
     setHoverZoom,
     setStartExplore,
+    exploreClicked,
+    setExploreClicked,
   } = useIntro();
 
   const [hovered, setHovered] = useState(false);
@@ -22,12 +24,21 @@ export default function IntroUI() {
   const interTightBold = "'Inter Tight Bold', sans-serif";
 
   const handleExploreClick = () => {
+    if (exploreClicked) return;
+
     setHoverZoom(false);
+    setExploreClicked(true);
     setStartExplore(true);
   };
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-20 text-white select-none">
+    <div
+      className={`
+        fixed inset-0 z-20 text-white select-none
+        transition-opacity duration-700 ease-out
+        ${exploreClicked ? "opacity-0 pointer-events-none" : "opacity-100"}
+      `}
+    >
       {/* ================= MOBILE ================= */}
       <div className="lg:hidden absolute inset-0 pointer-events-none">
         <div className="pointer-events-auto absolute top-6 left-6 right-6 flex items-center justify-between">
@@ -90,7 +101,7 @@ export default function IntroUI() {
             </div>
           </div>
 
-            <nav
+          <nav
             className="hidden lg:flex w-full justify-between lg:text-[0.8vw] mt-[-2vw] lg:px-14"
             style={{ fontFamily: interTight }}
           >
@@ -103,12 +114,15 @@ export default function IntroUI() {
         <div className="flex w-full items-end justify-between lg:px-14 lg:pb-8">
           <div className="pointer-events-auto w-64">
             <button
+              disabled={exploreClicked}
               onClick={handleExploreClick}
               onMouseEnter={() => {
+                if (exploreClicked) return;
                 setHovered(true);
                 setHoverZoom(true);
               }}
               onMouseLeave={() => {
+                if (exploreClicked) return;
                 setHovered(false);
                 setHoverZoom(false);
               }}

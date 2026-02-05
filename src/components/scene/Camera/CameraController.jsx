@@ -30,20 +30,33 @@ function cubicBezier(p1x, p1y, p2x, p2y) {
 
 export default function CameraController() {
   const { camera } = useThree();
-  const { loadingDone, setIntroReady, hoverZoom } = useIntro();
+  const {
+    loadingDone,
+    introReady,
+    setIntroReady,
+    hoverZoom,
+    startExplore,
+  } = useIntro();
 
-  const startPos = useRef(new THREE.Vector3(0, 3, 7));
-  const endPos = useRef(new THREE.Vector3(0, 1, 5.5));
+  const kf1Pos = useRef(new THREE.Vector3(0, 3, 7));
+  const kf2Pos = useRef(new THREE.Vector3(0, 1, 5.5));
+  const kf3Pos = useRef(new THREE.Vector3(0, 0.4, 0.13));
 
   const startPitch = -0.85;
   const endPitch = 0;
+  const explorePitch = 0;
+
   const basePitchRef = useRef(startPitch);
 
   const baseFov = useRef(camera.fov);
   const targetFov = useRef(camera.fov);
 
-  const timer = useRef(0);
-  const duration = 14;
+  const introTimer = useRef(0);
+  const exploreTimer = useRef(0);
+
+  const introDuration = 14;
+  const exploreDuration = 6;
+
   const ease = useRef(cubicBezier(0.51, 0.01, 0.0, 1.0));
 
   const cursor = useRef({ x: 0, y: 0 });
@@ -56,15 +69,19 @@ export default function CameraController() {
 
   const initialized = useRef(false);
   const introFinished = useRef(false);
+  const kf3Active = useRef(false);
 
   useEffect(() => {
     if (!loadingDone || initialized.current) return;
 
     initialized.current = true;
     introFinished.current = false;
-    timer.current = 0;
+    kf3Active.current = false;
 
-    camera.position.copy(startPos.current);
+    introTimer.current = 0;
+    exploreTimer.current = 0;
+
+    camera.position.copy(kf1Pos.current);
     camera.rotation.order = "YXZ";
     camera.rotation.set(startPitch, 0, 0);
 
@@ -84,11 +101,11 @@ export default function CameraController() {
     if (!loadingDone) return;
 
     if (!introFinished.current) {
-      timer.current += delta;
-      const t = Math.min(timer.current / duration, 1);
+      introTimer.current += delta;
+      const t = Math.min(introTimer.current / introDuration, 1);
       const eased = ease.current(t);
 
-      camera.position.lerpVectors(startPos.current, endPos.current, eased);
+      camera.position.lerpVectors(kf1Pos.current, kf2Pos.current, eased);
       basePitchRef.current = THREE.MathUtils.lerp(startPitch, endPitch, eased);
 
       if (t === 1) {
@@ -97,7 +114,23 @@ export default function CameraController() {
       }
     }
 
-    targetFov.current = hoverZoom ? baseFov.current - 5 : baseFov.current;
+    if (introReady && startExplore && !kf3Active.current) {
+      kf3Active.current = true;
+      exploreTimer.current = 0;
+    }
+
+    if (kf3Active.current) {
+      exploreTimer.current += delta;
+      const t = Math.min(exploreTimer.current / exploreDuration, 1);
+      const eased = ease.current(t);
+
+      camera.position.lerpVectors(kf2Pos.current, kf3Pos.current, eased);
+      basePitchRef.current = THREE.MathUtils.lerp(endPitch, explorePitch, eased);
+    }
+
+    targetFov.current = hoverZoom && !kf3Active.current
+      ? baseFov.current - 5
+      : baseFov.current;
 
     camera.fov = THREE.MathUtils.lerp(
       camera.fov,
