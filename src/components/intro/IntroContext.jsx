@@ -7,6 +7,9 @@ const IntroContext = createContext(null);
 export function IntroProvider({ children }) {
   const [loadingDone, setLoadingDone] = useState(false);
   const [introReady, setIntroReady] = useState(false);
+  const [uiHover, setUiHover] = useState(false);
+  const [hoverZoom, setHoverZoom] = useState(false);
+  const [startExplore, setStartExplore] = useState(false);
 
   return (
     <IntroContext.Provider
@@ -15,6 +18,13 @@ export function IntroProvider({ children }) {
         setLoadingDone,
         introReady,
         setIntroReady,
+        uiHover,
+        setUiHover,
+        hoverZoom,
+        setHoverZoom,
+        startExplore,
+        setStartExplore,
+
       }}
     >
       {children}

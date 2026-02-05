@@ -8,7 +8,7 @@ import { useIntro } from "../intro/IntroContext";
 
 export default function Map() {
   const { scene } = useGLTF(
-    "/models/ISCARIA_MapGading_BelomJadi_CR.glb",
+    "/models/ismap.min.glb",
     true,
     true,
     (loader) => {
@@ -31,12 +31,12 @@ export default function Map() {
       object={scene}
       scale={1}
       position={[0, 0, 0]}
-    />
+    />  
   );
 }
 
 useGLTF.preload(
-  "/models/ISCARIA_MapGading_BelomJadi_CR.glb",
+  "/models/ismap.min.glb",
   true,
   true,
   (loader) => {

@@ -1,9 +1,9 @@
 "use client";
 
-import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import { useIntro } from "../../intro/IntroContext";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { useIntro } from "../../intro/IntroContext";
 
 function cubicBezier(p1x, p1y, p2x, p2y) {
   return function (t) {
@@ -13,9 +13,11 @@ function cubicBezier(p1x, p1y, p2x, p2y) {
     const cy = 3 * p1y;
     const by = 3 * (p2y - p1y) - cy;
     const ay = 1 - cy - by;
+
     const sampleCurveX = (t) => ((ax * t + bx) * t + cx) * t;
     const sampleCurveDerivativeX = (t) => (3 * ax * t + 2 * bx) * t + cx;
     const sampleCurveY = (t) => ((ay * t + by) * t + cy) * t;
+
     let x = t;
     for (let i = 0; i < 5; i++) {
       const dx = sampleCurveX(x) - t;
@@ -28,17 +30,20 @@ function cubicBezier(p1x, p1y, p2x, p2y) {
 
 export default function CameraController() {
   const { camera } = useThree();
-  const { introReady } = useIntro();
+  const { loadingDone, setIntroReady, hoverZoom } = useIntro();
 
   const startPos = useRef(new THREE.Vector3(0, 3, 7));
   const endPos = useRef(new THREE.Vector3(0, 1, 5.5));
 
   const startPitch = -0.85;
   const endPitch = 0;
+  const basePitchRef = useRef(startPitch);
+
+  const baseFov = useRef(camera.fov);
+  const targetFov = useRef(camera.fov);
 
   const timer = useRef(0);
   const duration = 14;
-
   const ease = useRef(cubicBezier(0.51, 0.01, 0.0, 1.0));
 
   const cursor = useRef({ x: 0, y: 0 });
@@ -53,11 +58,18 @@ export default function CameraController() {
   const introFinished = useRef(false);
 
   useEffect(() => {
-    if (initialized.current) return;
+    if (!loadingDone || initialized.current) return;
+
     initialized.current = true;
+    introFinished.current = false;
+    timer.current = 0;
 
     camera.position.copy(startPos.current);
     camera.rotation.order = "YXZ";
+    camera.rotation.set(startPitch, 0, 0);
+
+    basePitchRef.current = startPitch;
+    baseFov.current = camera.fov;
 
     const onMouseMove = (e) => {
       cursor.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -66,18 +78,33 @@ export default function CameraController() {
 
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
-  }, [camera]);
+  }, [loadingDone, camera]);
 
   useFrame((_, delta) => {
-    if (!introReady || introFinished.current) return;
+    if (!loadingDone) return;
 
-    timer.current += delta;
-    const t = Math.min(timer.current / duration, 1);
-    const eased = ease.current(t);
+    if (!introFinished.current) {
+      timer.current += delta;
+      const t = Math.min(timer.current / duration, 1);
+      const eased = ease.current(t);
 
-    camera.position.lerpVectors(startPos.current, endPos.current, eased);
+      camera.position.lerpVectors(startPos.current, endPos.current, eased);
+      basePitchRef.current = THREE.MathUtils.lerp(startPitch, endPitch, eased);
 
-    const basePitch = THREE.MathUtils.lerp(startPitch, endPitch, eased);
+      if (t === 1) {
+        introFinished.current = true;
+        setIntroReady(true);
+      }
+    }
+
+    targetFov.current = hoverZoom ? baseFov.current - 5 : baseFov.current;
+
+    camera.fov = THREE.MathUtils.lerp(
+      camera.fov,
+      targetFov.current,
+      delta * 3
+    );
+    camera.updateProjectionMatrix();
 
     const targetYaw = -cursor.current.x * maxYaw + yawBias;
     const targetPitchOffset = -cursor.current.y * maxPitch;
@@ -87,7 +114,6 @@ export default function CameraController() {
       targetYaw,
       delta * 4
     );
-
     currentPitchOffset.current = THREE.MathUtils.lerp(
       currentPitchOffset.current,
       targetPitchOffset,
@@ -95,12 +121,8 @@ export default function CameraController() {
     );
 
     camera.rotation.y = currentYaw.current;
-    camera.rotation.x = basePitch + currentPitchOffset.current;
+    camera.rotation.x = basePitchRef.current + currentPitchOffset.current;
     camera.rotation.z = 0;
-
-    if (t === 1) {
-      introFinished.current = true;
-    }
   });
 
   return null;
