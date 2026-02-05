@@ -6,8 +6,8 @@ import BlurText from "../ui/BlurText";
 
 export default function IntroUI() {
   const {
-    introReady,
     loadingDone,
+    cameraSettled,
     setHoverZoom,
     setStartExplore,
     exploreClicked,
@@ -16,7 +16,7 @@ export default function IntroUI() {
 
   const [hovered, setHovered] = useState(false);
 
-  if (!loadingDone || !introReady) return null;
+  if (!loadingDone || !cameraSettled) return null;
 
   const clashDisplay = "'Clash Display', sans-serif";
   const interTight = "'Inter Tight', sans-serif";
@@ -39,7 +39,6 @@ export default function IntroUI() {
         ${exploreClicked ? "opacity-0 pointer-events-none" : "opacity-100"}
       `}
     >
-      {/* ================= MOBILE ================= */}
       <div className="lg:hidden absolute inset-0 pointer-events-none">
         <div className="pointer-events-auto absolute top-6 left-6 right-6 flex items-center justify-between">
           <span
@@ -51,9 +50,9 @@ export default function IntroUI() {
 
           <div className="h-9 w-9 rounded-full border border-white/30 flex items-center justify-center">
             <div className="space-y-1">
-              <span className="block w-4 h-px bg-white"></span>
-              <span className="block w-4 h-px bg-white"></span>
-              <span className="block w-4 h-px bg-white"></span>
+              <span className="block w-4 h-px bg-white" />
+              <span className="block w-4 h-px bg-white" />
+              <span className="block w-4 h-px bg-white" />
             </div>
           </div>
         </div>
@@ -63,9 +62,9 @@ export default function IntroUI() {
             className="flex flex-col items-center gap-1"
             style={{ fontFamily: interTightBold }}
           >
-            <BlurText text="INDEPENDENT" delay={800} animateBy="words" />
-            <BlurText text="STUDENT COUNCIL" delay={900} animateBy="words" />
-            <BlurText text="OF ABU DZAR" delay={1000} animateBy="words" />
+            <BlurText text="INDEPENDENT" delay={0} animateBy="words" />
+            <BlurText text="STUDENT COUNCIL" delay={100} animateBy="words" />
+            <BlurText text="OF ABU DZAR" delay={200} animateBy="words" />
           </div>
 
           <button
@@ -78,13 +77,12 @@ export default function IntroUI() {
         </div>
       </div>
 
-      {/* ================= DESKTOP ================= */}
       <div className="hidden lg:flex fixed inset-0 flex-col justify-between p-6 lg:p-10">
         <div className="flex flex-col w-full gap-10">
           <div className="flex w-full items-start justify-between lg:px-11">
             <BlurText
               text="ISCAR"
-              delay={1500}
+              delay={0}
               animateBy="words"
               className="text-[20vw] font-bold leading-[0.8]"
               style={{ fontFamily: clashDisplay }}
@@ -93,7 +91,7 @@ export default function IntroUI() {
             <div className="hidden lg:block max-w-60 pt-8">
               <BlurText
                 text="Official representative body of Abu Dzar students. We bridge ideas, foster innovation, and create a home for every aspiring leader"
-                delay={100}
+                delay={200}
                 animateBy="words"
                 className="text-[1vw] leading-relaxed opacity-90 text-right"
                 style={{ fontFamily: interTight }}
@@ -105,9 +103,9 @@ export default function IntroUI() {
             className="hidden lg:flex w-full justify-between lg:text-[0.8vw] mt-[-2vw] lg:px-14"
             style={{ fontFamily: interTight }}
           >
-            <BlurText text="ABOUT" delay={2200} animateBy="words" direction="top" />
-            <BlurText text="DIVISIONS" delay={2400} animateBy="words" direction="top" />
-            <BlurText text="GALLERY" delay={2600} animateBy="words" direction="top" />
+            <BlurText text="ABOUT" delay={400} animateBy="words" direction="top" />
+            <BlurText text="DIVISIONS" delay={500} animateBy="words" direction="top" />
+            <BlurText text="GALLERY" delay={600} animateBy="words" direction="top" />
           </nav>
         </div>
 
@@ -138,15 +136,10 @@ export default function IntroUI() {
                 className="text-2xl font-semibold tracking-tight"
                 style={{ fontFamily: interTight }}
               >
-                <BlurText text="Explore" delay={3000} animateBy="words" />
+                <BlurText text="Explore" delay={800} animateBy="words" />
               </span>
 
               <div className="absolute top-6 right-6 text-xl opacity-70">↗</div>
-              <div
-                className={`absolute inset-0 bg-linear-to-tr from-white/10 to-transparent transition-opacity duration-500 ${
-                  hovered ? "opacity-100" : "opacity-0"
-                }`}
-              />
             </button>
           </div>
 
@@ -154,9 +147,9 @@ export default function IntroUI() {
             className="flex flex-col items-end text-right"
             style={{ fontFamily: interTightLight }}
           >
-            <BlurText text="Independent" delay={3200} className="text-[1vw]" />
-            <BlurText text="Student Council" delay={3200} className="text-[1vw]" />
-            <BlurText text="Of Abu Dzar" delay={3200} className="text-[1vw]" />
+            <BlurText text="Independent" delay={900} className="text-[1vw]" />
+            <BlurText text="Student Council" delay={1000} className="text-[1vw]" />
+            <BlurText text="Of Abu Dzar" delay={1100} className="text-[1vw]" />
           </div>
         </div>
       </div>
