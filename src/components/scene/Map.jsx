@@ -1,13 +1,12 @@
 "use client";
 
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useAnimations } from "@react-three/drei";
 import { DRACOLoader } from "three-stdlib";
 import { useEffect } from "react";
 import { useIntro } from "../intro/IntroContext";
 
-
 export default function Map() {
-  const { scene } = useGLTF(
+  const { scene, animations } = useGLTF(
     "/models/ismap.min.glb",
     true,
     true,
@@ -18,13 +17,22 @@ export default function Map() {
     }
   );
 
+  const { actions } = useAnimations(animations, scene);
   const { setLoadingDone } = useIntro();
+
   useEffect(() => {
     if (scene) {
       setLoadingDone(true);
+      
+      Object.values(actions).forEach((action) => {
+        action.play();
+      });
     }
-  }, [scene, setLoadingDone]);
 
+    return () => {
+      Object.values(actions).forEach((action) => action.stop());
+    };
+  }, [scene, actions, setLoadingDone]);
 
   return (
     <primitive
