@@ -39,13 +39,13 @@ export default function CameraController() {
     startExplore,
   } = useIntro();
 
-  const kf1Pos = useRef(new THREE.Vector3(0, 9, 12.6));
+  const kf1Pos = useRef(new THREE.Vector3(0, 10, 12.6));
   const kf2Pos = useRef(new THREE.Vector3(0, 1, 5.5));
   const kf3Pos = useRef(new THREE.Vector3(0, 0.4, 0.13));
 
-  const startPitch = -1.60;
+  const startPitch = -1.6;
   const endPitch = 0;
-  const explorePitch = 0;
+  const explorePitch = 0.11;
 
   const basePitchRef = useRef(startPitch);
   const baseFov = useRef(camera.fov);
@@ -55,7 +55,7 @@ export default function CameraController() {
   const exploreTimer = useRef(0);
   const settleTimer = useRef(0);
 
-  const introDuration = 8;
+  const introDuration = 16;
   const exploreDuration = 6;
   const SETTLE_DELAY = 0.6;
 
@@ -70,6 +70,7 @@ export default function CameraController() {
   const yawBias = -0.01;
 
   const initialized = useRef(false);
+  const frameReady = useRef(false);
   const introFinished = useRef(false);
   const cameraSettledRef = useRef(false);
   const kf3Active = useRef(false);
@@ -78,6 +79,8 @@ export default function CameraController() {
     if (!loadingDone || initialized.current) return;
 
     initialized.current = true;
+    frameReady.current = false;
+
     introFinished.current = false;
     cameraSettledRef.current = false;
     kf3Active.current = false;
@@ -93,6 +96,10 @@ export default function CameraController() {
     basePitchRef.current = startPitch;
     baseFov.current = camera.fov;
 
+    requestAnimationFrame(() => {
+      frameReady.current = true;
+    });
+
     const onMouseMove = (e) => {
       cursor.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
       cursor.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -103,8 +110,9 @@ export default function CameraController() {
   }, [loadingDone, camera]);
 
   useFrame((_, delta) => {
-    if (!loadingDone) return;
+    if (!loadingDone || !frameReady.current) return;
 
+    // KF1 ➜ KF2 (INTRO)
     if (!introFinished.current) {
       introTimer.current += delta;
       const t = Math.min(introTimer.current / introDuration, 1);
@@ -116,7 +124,8 @@ export default function CameraController() {
       if (t === 1) introFinished.current = true;
     }
 
-    if (introFinished.current && !cameraSettledRef.current) {
+    // INTRO SETTLE
+    if (introFinished.current && !cameraSettledRef.current && !startExplore) {
       settleTimer.current += delta;
 
       if (settleTimer.current >= SETTLE_DELAY) {
@@ -126,11 +135,15 @@ export default function CameraController() {
       }
     }
 
-    if (cameraSettledRef.current && startExplore && !kf3Active.current) {
+    // START KF3 (EXPLORE)
+    if (startExplore && !kf3Active.current) {
       kf3Active.current = true;
       exploreTimer.current = 0;
+      cameraSettledRef.current = false;
+      setCameraSettled(false);
     }
 
+    // KF2 ➜ KF3
     if (kf3Active.current) {
       exploreTimer.current += delta;
       const t = Math.min(exploreTimer.current / exploreDuration, 1);
@@ -138,6 +151,12 @@ export default function CameraController() {
 
       camera.position.lerpVectors(kf2Pos.current, kf3Pos.current, eased);
       basePitchRef.current = THREE.MathUtils.lerp(endPitch, explorePitch, eased);
+
+      // KF3 SELESAI
+      if (t === 1 && !cameraSettledRef.current) {
+        cameraSettledRef.current = true;
+        setCameraSettled(true);
+      }
     }
 
     targetFov.current =

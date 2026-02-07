@@ -38,6 +38,13 @@ canvas {
 }
 
 @font-face {
+  font-family: 'Inter SemiBold';
+  src: url('/fonts/InterTight-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Inter Tight Light';
   src: url('/fonts/InterTight-Light.ttf') format('truetype');
   font-weight: normal;

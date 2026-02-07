@@ -6,6 +6,7 @@ import { Stats } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import IntroUI from "@/components/intro/IntroUI";
+import KF3UI from "@/components/ui/KF3UI";
 
 const Map = dynamic(() => import("@/components/scene/Map"), { ssr: false });
 const CameraController = dynamic(
@@ -60,7 +61,8 @@ export default function Home() {
           setIntroDone(true);
           setBoost(true);
         }}
-      />
+      />  
+      <KF3UI />
 
       <Canvas
         dpr={[1, 2]}
@@ -71,7 +73,7 @@ export default function Home() {
         <color attach="background" args={["#f0f0f0"]} />
         <Stats showPanel={0} />
         <StageLighting />
-        <CameraController />
+2        <CameraController />
         <Map />
       </Canvas>
     </div>

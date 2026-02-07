@@ -5,8 +5,10 @@ import { createContext, useContext, useState } from "react";
 const IntroContext = createContext(null);
 
 export function IntroProvider({ children }) {
-  const [loadingDone, setLoadingDone] = useState(false);
-  const [introReady, setIntroReady] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(false); // asset siap
+  const [splashDone, setSplashDone] = useState(false);   // 🆕 splash kelar
+  const [introReady, setIntroReady] = useState(false);   // camera settle
+
   const [uiHover, setUiHover] = useState(false);
   const [hoverZoom, setHoverZoom] = useState(false);
   const [startExplore, setStartExplore] = useState(false);
@@ -18,6 +20,8 @@ export function IntroProvider({ children }) {
       value={{
         loadingDone,
         setLoadingDone,
+        splashDone,
+        setSplashDone,
         introReady,
         setIntroReady,
         uiHover,
@@ -39,10 +43,6 @@ export function IntroProvider({ children }) {
 
 export function useIntro() {
   const ctx = useContext(IntroContext);
-  
-  if (!ctx) {
-    throw new Error("useIntro must be used inside <IntroProvider>");
-  }
-  
+  if (!ctx) throw new Error("useIntro must be used inside IntroProvider");
   return ctx;
 }

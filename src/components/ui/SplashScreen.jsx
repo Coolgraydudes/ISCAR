@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useIntro } from "@/components/intro/IntroContext";
 
 export default function SplashScreen() {
-  const { setIntroReady } = useIntro();
+  const { setSplashDone } = useIntro();
 
   const LOGO_WIDTH = 110;
   const ANIMATION_DURATION = 5;
+
+  // 🔥 INI YANG HILANG KEMARIN
   const BASE_COLOR = "#8E8E8E";
   const FILL_COLOR = "#ffffff";
 
@@ -17,21 +19,21 @@ export default function SplashScreen() {
   useEffect(() => {
     const start = setTimeout(() => setAnimate(true), 300);
     const finish = setTimeout(() => {
-      setIntroReady(true);
-      setHidden(true);
+      setSplashDone(true); // splash selesai
+      setHidden(true);     // ilang dari layar
     }, (ANIMATION_DURATION + 0.3) * 1000);
 
     return () => {
       clearTimeout(start);
       clearTimeout(finish);
     };
-  }, [setIntroReady]);
+  }, [setSplashDone]);
 
   if (hidden) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
-      <svg
+       <svg
         className="h-auto"
         style={{ width: LOGO_WIDTH }}
         viewBox="0 0 151 140"
