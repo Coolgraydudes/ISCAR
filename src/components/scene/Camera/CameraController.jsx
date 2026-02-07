@@ -40,7 +40,7 @@ export default function CameraController() {
   } = useIntro();
 
   const kf1Pos = useRef(new THREE.Vector3(0, 10, 12.6));
-  const kf2Pos = useRef(new THREE.Vector3(0, 1, 5.5));
+  const kf2Pos = useRef(new THREE.Vector3(0, 0.5, 5.5));
   const kf3Pos = useRef(new THREE.Vector3(0, 0.4, 0.13));
 
   const startPitch = -1.6;
@@ -181,7 +181,7 @@ export default function CameraController() {
 
     camera.rotation.y = currentYaw.current;
     camera.rotation.x = basePitchRef.current + currentPitchOffset.current;
-    camera.rotation.z = 0;
+    camera.rotation.z = 0;1
   });
 
   return null;
