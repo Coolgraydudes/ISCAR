@@ -44,7 +44,7 @@ export default function CameraController() {
   const kf3Pos = useRef(new THREE.Vector3(0, 0.4, 0.13));
 
   const startPitch = -1.6;
-  const endPitch = 0;
+  const endPitch = 0.05;
   const explorePitch = 0.11;
 
   const basePitchRef = useRef(startPitch);
@@ -55,7 +55,7 @@ export default function CameraController() {
   const exploreTimer = useRef(0);
   const settleTimer = useRef(0);
 
-  const introDuration = 16;
+  const introDuration = 12;
   const exploreDuration = 6;
   const SETTLE_DELAY = 0.6;
 

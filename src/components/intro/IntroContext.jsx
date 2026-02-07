@@ -5,10 +5,9 @@ import { createContext, useContext, useState } from "react";
 const IntroContext = createContext(null);
 
 export function IntroProvider({ children }) {
-  const [loadingDone, setLoadingDone] = useState(false); // asset siap
-  const [splashDone, setSplashDone] = useState(false);   // 🆕 splash kelar
-  const [introReady, setIntroReady] = useState(false);   // camera settle
-
+  const [loadingDone, setLoadingDone] = useState(false);
+  const [splashDone, setSplashDone] = useState(false);
+  const [introReady, setIntroReady] = useState(false);
   const [uiHover, setUiHover] = useState(false);
   const [hoverZoom, setHoverZoom] = useState(false);
   const [startExplore, setStartExplore] = useState(false);
@@ -36,7 +35,7 @@ export function IntroProvider({ children }) {
         setCameraSettled,
       }}
     >
-      {children}
+      {children} 
     </IntroContext.Provider>
   );
 }

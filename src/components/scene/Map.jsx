@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 export default function Map() {
   const { scene, animations } = useGLTF(
-    "/models/ISCARIA.min.glb",
+    "/models/iscaria.min.glb",
     true,
     true,
     (loader) => {
@@ -28,8 +28,33 @@ export default function Map() {
 
   const initialized = useRef(false);
 
-  const LOGO_SPEED = 1.5;
+  const LOGO_SPEED = 1;
   const BASE_ROTATE_SPEED = 1;
+
+  useEffect(() => {
+    if (!scene) return;
+
+    scene.traverse((obj) => {
+      if (!obj.isMesh || !obj.material) return;
+
+      const name = obj.name.toLowerCase();
+      if (!name.includes("logo")) return;
+
+      const materials = Array.isArray(obj.material)
+        ? obj.material
+        : [obj.material];
+
+      materials.forEach((mat) => {
+        if (
+          mat.isMeshStandardMaterial ||
+          mat.isMeshPhysicalMaterial
+        ) {
+          mat.emissive = new THREE.Color("#ffd27d");
+          mat.emissiveIntensity = 0;
+        }
+      });
+    });
+  }, [scene]);
 
   useEffect(() => {
     if (!scene || !actions || initialized.current) return;
@@ -43,7 +68,6 @@ export default function Map() {
     });
   }, [scene, actions, setLoadingDone]);
 
-  // ▶️ SPLASH LOGO
   useEffect(() => {
     if (!splashDone || !actions) return;
 
@@ -58,7 +82,6 @@ export default function Map() {
     logo.play();
   }, [splashDone, actions]);
 
-  // ▶️ BASE DIVISI ROTATE — JALAN SAAT EXPLORE
   useEffect(() => {
     if (!actions) return;
 
@@ -74,7 +97,6 @@ export default function Map() {
     }
   }, [startExplore, cameraSettled, actions]);
 
-  // ⛔ STOP SAAT CAMERA SUDAH SETTLED DI KF3
   useEffect(() => {
     if (!actions || !cameraSettled) return;
 
@@ -88,4 +110,4 @@ export default function Map() {
   return <primitive object={scene} scale={1} position={[0, 0, 0]} />;
 }
 
-useGLTF.preload("/models/ISCARIA.min.glb");
+useGLTF.preload("/models/iscaria.min.glb");
