@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 export default function Map() {
   const { scene, animations } = useGLTF(
-    "/models/iscaria.min.glb",
+    "/models/ISCARIA.min.glb",
     true,
     true,
     (loader) => {
@@ -112,4 +112,4 @@ export default function Map() {
   return <primitive object={scene} scale={1} position={[0, 0, 0]} />;
 }
 
-useGLTF.preload("/models/iscaria.min.glb");
+useGLTF.preload("/models/ISCARIA.min.glb");
