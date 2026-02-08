@@ -4,14 +4,12 @@ import { useState } from "react";
 
 export default function CameraDebug() {
   const { camera } = useThree();
-  const [pos, setPos] = useState({ x: 0, y: 0, z: 0 });
+  const pos = useState({ x: 0, y: 0, z: 0 });
 
   useFrame(() => {
-    setPos({
-      x: camera.position.x.toFixed(2),
-      y: camera.position.y.toFixed(2),
-      z: camera.position.z.toFixed(2),
-    });
+    pos.current.x = camera.position.x.toFixed(2);
+    pos.current.y = camera.position.y.toFixed(2);
+    pos.current.z = camera.position.z.toFixed(2);
   });
 
   return (

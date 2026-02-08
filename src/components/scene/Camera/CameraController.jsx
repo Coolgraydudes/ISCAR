@@ -15,7 +15,8 @@ function cubicBezier(p1x, p1y, p2x, p2y) {
     const ay = 1 - cy - by;
 
     const sampleCurveX = (t) => ((ax * t + bx) * t + cx) * t;
-    const sampleCurveDerivativeX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+    const sampleCurveDerivativeX = (t) =>
+      (3 * ax * t + 2 * bx) * t + cx;
     const sampleCurveY = (t) => ((ay * t + by) * t + cy) * t;
 
     let x = t;
@@ -75,6 +76,10 @@ export default function CameraController() {
   const cameraSettledRef = useRef(false);
   const kf3Active = useRef(false);
 
+  // 🔒 SNAPSHOT KF2 (INI FIX UTAMA)
+  const frozenPos = useRef(new THREE.Vector3());
+  const frozenRot = useRef(new THREE.Euler());
+
   useEffect(() => {
     if (!loadingDone || initialized.current) return;
 
@@ -121,7 +126,13 @@ export default function CameraController() {
       camera.position.lerpVectors(kf1Pos.current, kf2Pos.current, eased);
       basePitchRef.current = THREE.MathUtils.lerp(startPitch, endPitch, eased);
 
-      if (t === 1) introFinished.current = true;
+      if (t === 1) {
+        introFinished.current = true;
+
+        // 🔒 FREEZE TRANSFORM DI KF2
+        frozenPos.current.copy(camera.position);
+        frozenRot.current.copy(camera.rotation);
+      }
     }
 
     // INTRO SETTLE
@@ -135,7 +146,7 @@ export default function CameraController() {
       }
     }
 
-    // START KF3 (EXPLORE)
+    // START KF3
     if (startExplore && !kf3Active.current) {
       kf3Active.current = true;
       exploreTimer.current = 0;
@@ -152,19 +163,32 @@ export default function CameraController() {
       camera.position.lerpVectors(kf2Pos.current, kf3Pos.current, eased);
       basePitchRef.current = THREE.MathUtils.lerp(endPitch, explorePitch, eased);
 
-      // KF3 SELESAI
       if (t === 1 && !cameraSettledRef.current) {
         cameraSettledRef.current = true;
         setCameraSettled(true);
       }
     }
 
-    targetFov.current =
-      hoverZoom && !kf3Active.current ? baseFov.current - 5 : baseFov.current;
+    // 🔒 FORCE STAY DI KF2 SELAMA INTRO UI
+    if (introFinished.current && !kf3Active.current) {
+      camera.position.copy(frozenPos.current);
+      camera.rotation.copy(frozenRot.current);
+    }
 
-    camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov.current, delta * 3);
+    // HOVER ZOOM (FOV ONLY)
+    targetFov.current =
+      hoverZoom && !kf3Active.current
+        ? baseFov.current - 5
+        : baseFov.current;
+
+    camera.fov = THREE.MathUtils.lerp(
+      camera.fov,
+      targetFov.current,
+      delta * 3
+    );
     camera.updateProjectionMatrix();
 
+    // MOUSE PARALLAX (ROTATION ONLY)
     const targetYaw = -cursor.current.x * maxYaw + yawBias;
     const targetPitchOffset = -cursor.current.y * maxPitch;
 
@@ -181,7 +205,7 @@ export default function CameraController() {
 
     camera.rotation.y = currentYaw.current;
     camera.rotation.x = basePitchRef.current + currentPitchOffset.current;
-    camera.rotation.z = 0;1
+    camera.rotation.z = 0;
   });
 
   return null;

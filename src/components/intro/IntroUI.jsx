@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIntro } from "./IntroContext";
 import BlurText from "../ui/BlurText";
 
@@ -16,6 +16,20 @@ export default function IntroUI() {
 
   const [hovered, setHovered] = useState(false);
 
+  // 🔒 ARM HOVER SETELAH INTROUI MOUNT STABIL
+  const [hoverArmed, setHoverArmed] = useState(false);
+
+  useEffect(() => {
+    if (!loadingDone || !cameraSettled) return;
+
+    // delay kecil biar 1–2 frame lewat
+    const t = setTimeout(() => {
+      setHoverArmed(true);
+    }, 120);
+
+    return () => clearTimeout(t);
+  }, [loadingDone, cameraSettled]);
+
   if (!loadingDone || !cameraSettled) return null;
 
   const clashDisplay = "'Clash Display', sans-serif";
@@ -30,19 +44,33 @@ export default function IntroUI() {
     setStartExplore(true);
   };
 
+  // 🔒 WRAPPED HOVER HANDLER (LOGIC ASLI TETAP)
+  const handleMouseEnter = () => {
+    if (!exploreClicked && hoverArmed) {
+      setHovered(true);
+      setHoverZoom(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!exploreClicked && hoverArmed) {
+      setHovered(false);
+      setHoverZoom(false);
+    }
+  };
+
   return (
     <div
       className={`
         fixed inset-0 z-20 text-white select-none
         transition-opacity duration-700 ease-out
         ${exploreClicked ? "opacity-0 pointer-events-none" : "opacity-100"}
-      `}>
-
-      {/* Mobile */}
+      `}
+    >
+      {/* ================= MOBILE ================= */}
       <div className="lg:hidden absolute inset-0 pointer-events-none">
-
         <div className="pointer-events-auto absolute top-6 left-6 right-6 flex items-center justify-between">
-          <span  
+          <span
             className="text-3xl font-bold tracking-tight text-white"
             style={{ fontFamily: clashDisplay }}
           >
@@ -63,27 +91,35 @@ export default function IntroUI() {
             className="flex flex-col items-center text-white"
             style={{ fontFamily: interTightBold }}
           >
-            <span className="text-2xl tracking-wider leading-6">INDEPENDENT</span>
-            <span className="text-2xl tracking-wider leading-6">STUDENT COUNCIL</span>
-            <span className="text-2xl tracking-wider leading-6">OF ABU DZAR</span>
+            <span className="text-2xl tracking-wider leading-6">
+              INDEPENDENT
+            </span>
+            <span className="text-2xl tracking-wider leading-6">
+              STUDENT COUNCIL
+            </span>
+            <span className="text-2xl tracking-wider leading-6">
+              OF ABU DZAR
+            </span>
           </div>
 
           <button
-              disabled={exploreClicked}
-              onClick={handleExploreClick}
-              onMouseEnter={() => { if (!exploreClicked) { setHovered(true); setHoverZoom(true); } }}
-              onMouseLeave={() => { if (!exploreClicked) { setHovered(false); setHoverZoom(false); } }}
-              className="pointer-events-auto px-14 py-3 rounded-full
-                        border border-white/20
-                        bg-white/5 backdrop-blur-md
-                        text-sm tracking-wide text-white
-                        shadow-[0_0_20px_rgba(255,255,255,0.08)]
-                        active:scale-95 transition"
-              style={{
-                transform: hovered ? "scale(1.05)" : "scale(1)",
-                boxShadow: hovered ? "0 0 40px rgba(255,255,255,0.15)" : "none",
-                fontFamily: interSemiBold,
-              }}
+            disabled={exploreClicked}
+            onClick={handleExploreClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="pointer-events-auto px-14 py-3 rounded-full
+                       border border-white/20
+                       bg-white/5 backdrop-blur-md
+                       text-sm tracking-wide text-white
+                       shadow-[0_0_20px_rgba(255,255,255,0.08)]
+                       active:scale-95 transition"
+            style={{
+              transform: hovered ? "scale(1.05)" : "scale(1)",
+              boxShadow: hovered
+                ? "0 0 40px rgba(255,255,255,0.15)"
+                : "none",
+              fontFamily: interSemiBold,
+            }}
           >
             Explore
           </button>
@@ -99,7 +135,6 @@ export default function IntroUI() {
           for every aspiring leader.”
         </div>
       </div>
-
 
       {/* Desktop */}
       <div className="hidden lg:flex fixed inset-0 flex-col justify-between py-10">

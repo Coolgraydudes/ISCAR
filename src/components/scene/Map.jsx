@@ -13,7 +13,9 @@ export default function Map() {
     true,
     (loader) => {
       const dracoLoader = new DRACOLoader();
-      dracoLoader.setDecoderPath("/draco/");
+      dracoLoader.setDecoderPath(
+        "https://www.gstatic.com/draco/v1/decoders/"
+      );
       loader.setDRACOLoader(dracoLoader);
     }
   );

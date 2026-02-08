@@ -10,7 +10,6 @@ export const metadata = {
 
   keywords: [
       "ISCAR",
-      "ISCAR",
       "OSIS",
       "Organisasi Siswa",
       "Website Sekolah",

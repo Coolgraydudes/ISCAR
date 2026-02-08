@@ -9,7 +9,10 @@ import * as THREE from "three";
 import IntroUI from "@/components/intro/IntroUI";
 import KF3UI from "@/components/ui/KF3UI";
 
-const Map = dynamic(() => import("@/components/scene/Map"), { ssr: false });
+const Map = dynamic(
+  () => import("@/components/scene/Map"),
+  { ssr: false }
+);
 const CameraController = dynamic(
   () => import("@/components/scene/Camera/CameraController"),
   { ssr: false }

@@ -8,8 +8,6 @@ export default function SplashScreen() {
 
   const LOGO_WIDTH = 110;
   const ANIMATION_DURATION = 5;
-
-  // 🔥 INI YANG HILANG KEMARIN
   const BASE_COLOR = "#8E8E8E";
   const FILL_COLOR = "#ffffff";
 
@@ -19,8 +17,8 @@ export default function SplashScreen() {
   useEffect(() => {
     const start = setTimeout(() => setAnimate(true), 300);
     const finish = setTimeout(() => {
-      setSplashDone(true); // splash selesai
-      setHidden(true);     // ilang dari layar
+      setSplashDone(true);
+      setHidden(true);
     }, (ANIMATION_DURATION + 0.3) * 1000);
 
     return () => {
