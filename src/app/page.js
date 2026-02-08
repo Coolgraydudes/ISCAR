@@ -9,10 +9,7 @@ import * as THREE from "three";
 import IntroUI from "@/components/intro/IntroUI";
 import KF3UI from "@/components/ui/KF3UI";
 
-const Map = dynamic(
-  () => import("@/components/scene/Map"),
-  { ssr: false }
-);
+const Map = dynamic(() => import("@/components/scene/Map"), { ssr: false });
 const CameraController = dynamic(
   () => import("@/components/scene/Camera/CameraController"),
   { ssr: false }
@@ -24,70 +21,66 @@ function StageLighting({ introDone, boost }) {
   const pointRef = useRef();
   const acc = useRef(0);
 
-  const HERO_BASE = 1.7;
-  const HERO_BOOST = 2.4;
+  const HERO_BASE = 3.2;
+  const HERO_BOOST = 4.4;
 
   useFrame((state, delta) => {
-    if (!spotRef.current) return;
-
     acc.current += delta;
     if (acc.current < 1 / 30) return;
     acc.current = 0;
 
     const t = state.clock.elapsedTime;
+    const heroTarget = boost ? HERO_BOOST : introDone ? HERO_BASE : 1.8;
 
-    spotRef.current.position.x = Math.sin(t * 0.18) * 0.28;
-
-    const heroTarget = boost ? HERO_BOOST : introDone ? HERO_BASE : 0;
-
-    spotRef.current.intensity = THREE.MathUtils.lerp(
-      spotRef.current.intensity,
-      heroTarget,
-      0.055
-    );
+    if (spotRef.current) {
+      spotRef.current.position.x = Math.sin(t * 0.2) * 0.35;
+      spotRef.current.intensity = THREE.MathUtils.lerp(
+        spotRef.current.intensity,
+        heroTarget,
+        0.08
+      );
+    }
 
     if (dirRef.current) {
       dirRef.current.intensity = THREE.MathUtils.lerp(
         dirRef.current.intensity,
-        introDone ? 0.06 : 0.16,
-        0.045
+        introDone ? 1.2 : 0.9,
+        0.06
       );
     }
 
     if (pointRef.current) {
       pointRef.current.intensity = THREE.MathUtils.lerp(
         pointRef.current.intensity,
-        introDone ? 0.035 : 0.07,
-        0.045
+        introDone ? 0.35 : 0.25,
+        0.05
       );
     }
   });
 
   return (
     <>
-      <ambientLight intensity={introDone ? 0.015 : 0.022} />
-
+      <ambientLight intensity={0.65} />
       <spotLight
         ref={spotRef}
-        position={[0, 7.5, 4]}
-        angle={0.32}
-        penumbra={0.9}
-        intensity={0}
-        color="#fff1cf"
+        position={[0, 8, 5]}
+        angle={0.38}
+        penumbra={0.6}
+        intensity={2}
+        color="#ffffff"
+        castShadow
       />
-
       <directionalLight
         ref={dirRef}
-        position={[-4, 3, -4]}
-        intensity={0.16}
-        color="#8fa3d1"
+        position={[-6, 6, -2]}
+        intensity={1}
+        color="#e8f0ff"
       />
-
       <pointLight
         ref={pointRef}
-        position={[0, 4.5, -6]}
-        intensity={0.07}
-        color="#241a12"
+        position={[0, 3, -6]}
+        intensity={0.3}
+        color="#ffffff"
       />
     </>
   );
@@ -96,46 +89,34 @@ function StageLighting({ introDone, boost }) {
 function EmissiveController({ introDone, boost }) {
   const { scene } = useThree();
   const mats = useRef([]);
-  const acc = useRef(0);
 
-  const BASE = 1.85;
-  const BOOST = 3.2;
+  const BASE = 2.2;
+  const BOOST = 3.6;
 
   useEffect(() => {
-    if (!scene) return;
     mats.current = [];
+    scene.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      if (!o.name.toLowerCase().includes("logo")) return;
 
-    scene.traverse((obj) => {
-      if (!obj.isMesh || !obj.material) return;
-      if (!obj.name.toLowerCase().includes("logo")) return;
-
-      const materials = Array.isArray(obj.material)
-        ? obj.material
-        : [obj.material];
-
-      materials.forEach((mat) => {
-        if (mat.emissive) {
-          mat.emissiveIntensity = 0;
-          mats.current.push(mat);
+      const arr = Array.isArray(o.material) ? o.material : [o.material];
+      arr.forEach((m) => {
+        if (m.emissive) {
+          m.emissive.set("#ffffff");
+          m.emissiveIntensity = 0;
+          m.mats.current.push(m);
         }
       });
     });
   }, [scene]);
 
-  useFrame((_, delta) => {
-    if (!mats.current.length) return;
-
-    acc.current += delta;
-    if (acc.current < 1 / 30) return;
-    acc.current = 0;
-
-    const target = boost ? BOOST : introDone ? BASE : 0;
-
-    mats.current.forEach((mat) => {
-      mat.emissiveIntensity = THREE.MathUtils.lerp(
-        mat.emissiveIntensity,
+  useFrame(() => {
+    const target = boost ? BOOST : introDone ? BASE : 1.2;
+    mats.current.forEach((m) => {
+      m.emissiveIntensity = THREE.MathUtils.lerp(
+        m.emissiveIntensity,
         target,
-        0.075
+        0.1
       );
     });
   });
@@ -143,33 +124,15 @@ function EmissiveController({ introDone, boost }) {
   return null;
 }
 
-function BloomController({ boost }) {
-  return (
-    <Bloom
-      intensity={boost ? 0.36 : 0.22}
-      luminanceThreshold={0.92}
-      luminanceSmoothing={0.1}
-      mipmapBlur
-    />
-  );
-}
-
 function CameraBreathing() {
   const { camera } = useThree();
-  const basePos = useRef(camera.position.clone());
-  const acc = useRef(0);
+  const base = useRef(camera.position.clone());
 
-  useFrame((state, delta) => {
-    acc.current += delta;
-    if (acc.current < 1 / 30) return;
-    acc.current = 0;
-
+  useFrame((state) => {
     const t = state.clock.elapsedTime;
-
-    camera.position.x = basePos.current.x + Math.sin(t * 0.12) * 0.02;
-    camera.position.y = basePos.current.y + Math.sin(t * 0.08) * 0.015;
-
-    camera.fov = 45 + Math.sin(t * 0.1) * 0.4;
+    camera.position.x = base.current.x + Math.sin(t * 0.12) * 0.02;
+    camera.position.y = base.current.y + Math.sin(t * 0.1) * 0.02;
+    camera.fov = 45 + Math.sin(t * 0.1) * 0.25;
     camera.updateProjectionMatrix();
   });
 
@@ -180,10 +143,10 @@ export default function Home() {
   const [introDone, setIntroDone] = useState(false);
   const [boost, setBoost] = useState(false);
 
-  const dpr = useMemo(() => {
-    if (typeof window === "undefined") return 1;
-    return Math.min(window.devicePixelRatio || 1, 1.2);
-  }, []);
+  const dpr = useMemo(
+    () => (typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 1.25) : 1),
+    []
+  );
 
   useEffect(() => {
     if (!boost) return;
@@ -192,7 +155,7 @@ export default function Home() {
   }, [boost]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#0b0b0b]">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#151515]">
       <IntroUI
         onClick={() => {
           setIntroDone(true);
@@ -204,9 +167,8 @@ export default function Home() {
       <Canvas
         dpr={dpr}
         camera={{ fov: 45, position: [0, 1.8, 6] }}
-        className="absolute inset-0"
       >
-        <color attach="background" args={["#0b0b0b"]} />
+        <color attach="background" args={["#151515"]} />
 
         {process.env.NODE_ENV === "development" && <Stats />}
 
@@ -214,12 +176,11 @@ export default function Home() {
         <CameraController />
         <CameraBreathing />
         <Map />
-
         <EmissiveController introDone={introDone} boost={boost} />
 
         <EffectComposer multisampling={0}>
-          <BloomController boost={boost} />
-          <Vignette offset={0.26} darkness={0.7} eskil={false} />
+          <Bloom intensity={0.28} luminanceThreshold={0.85} />
+          <Vignette offset={0.18} darkness={0.35} />
         </EffectComposer>
       </Canvas>
     </div>

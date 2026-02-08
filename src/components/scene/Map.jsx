@@ -30,7 +30,7 @@ export default function Map() {
 
   const initialized = useRef(false);
 
-  const LOGO_SPEED = 1;
+  const LOGO_SPEED = 0.7;
   const BASE_ROTATE_SPEED = 1;
 
   useEffect(() => {
