@@ -14,29 +14,32 @@ export default function IntroUI() {
     setExploreClicked,
   } = useIntro();
 
+  // ---------------------------------------------------------
+  // 1. STATE & LOGIC SECTION
+  // ---------------------------------------------------------
   const [uiHidden, setUiHidden] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [hoverArmed, setHoverArmed] = useState(false);
   const [showNav, setShowNav] = useState(false);
   
-  // --- TAMBAHAN BARU: State untuk buka/tutup menu mobile ---
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Tanda: State untuk buka/tutup menu mobile
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
 
   useEffect(() => {
     if (!loadingDone || !cameraSettled) return;
-    const t = setTimeout(() => {
-      setHoverArmed(true);
-    }, 120);
+    const t = setTimeout(() => { setHoverArmed(true); }, 120);
     return () => clearTimeout(t); 
   }, [loadingDone, cameraSettled]);
 
   if (!loadingDone || !cameraSettled) return null;
 
+  // Font Styles
   const clashDisplay = "'Clash Display', sans-serif";
   const interTight = "'Inter Tight', sans-serif";
   const interTightBold = "'Inter Tight Bold', sans-serif";
   const interSemiBold = "'Inter SemiBold', sans-serif";
 
+  // Fungsi saat tombol Explore diklik
   const handleExploreClick = () => {
     if (exploreClicked) return;
     setHoverZoom(false);
@@ -46,47 +49,38 @@ export default function IntroUI() {
       setStartExplore(true);
     }, 650);
     setTimeout(() => {
-      setShowNav(true);
+      setShowNav(true); // Memunculkan Navbar utama setelah 2 detik
     }, 2000);
   };
 
-  const handleMouseEnter = () => {
-    if (!exploreClicked && hoverArmed) {
-      setHovered(true);
-      setHoverZoom(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!exploreClicked && hoverArmed) {
-      setHovered(false);
-      setHoverZoom(false);
-    }
-  };
+  const handleMouseEnter = () => { if (!exploreClicked && hoverArmed) { setHovered(true); setHoverZoom(true); } };
+  const handleMouseLeave = () => { if (!exploreClicked && hoverArmed) { setHovered(false); setHoverZoom(false); } };
 
   return (
     <div className="fixed inset-0 z-20 text-white select-none pointer-events-none">
       
-      {/* --- TAMBAHAN BARU: MOBILE MENU OVERLAY (Layar menu saat hamburger dipencet) --- */}
+      {/* ---------------------------------------------------------
+          2. MOBILE MENU OVERLAY (Tampilan Menu saat Hamburger diklik)
+          --------------------------------------------------------- */}
       <div className={`fixed inset-0 bg-black/95 backdrop-blur-2xl z-[70] transition-all duration-500 ease-in-out flex flex-col items-center justify-center pointer-events-auto
         ${isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"}`}>
         
-        {/* Tombol Close */}
+        {/* Tombol Close di dalam Menu Mobile */}
         <button 
-          onClick={() => setIsMenuOpen(false)}
+          onClick={() => setIsMenuOpen(false)} // <--- Klik untuk tutup menu
           className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors uppercase tracking-widest text-xs"
           style={{ fontFamily: interTight }}
         >
           [ Close ]
         </button>
 
-        {/* List Menu */}
+        {/* Daftar Link Menu Mobile */}
         <nav className="flex flex-col items-center gap-10 text-4xl font-bold tracking-tighter" style={{ fontFamily: clashDisplay }}>
           {["ABOUT", "DIVISIONS", "GALLERY"].map((item) => (
             <span 
               key={item}
               className="hover:scale-110 transition-transform cursor-pointer"
-              onClick={() => setIsMenuOpen(false)} // Tutup menu saat link diklik
+              onClick={() => setIsMenuOpen(false)} // <--- Klik menu otomatis tutup
             >
               {item}
             </span>
@@ -94,25 +88,29 @@ export default function IntroUI() {
         </nav>
       </div>
 
-      {/* --- NAVBAR UTAMA (Muncul setelah Explore) --- */}
+
+      {/* ---------------------------------------------------------
+          3. MAIN NAVBAR (Navigasi yang muncul SETELAH Explore)
+          --------------------------------------------------------- */}
       <div className={`fixed top-0 left-0 w-full px-6 lg:px-[7.3vw] py-6 lg:py-10 flex flex-row justify-between items-center transition-all duration-[1500ms] ease-in-out z-50
         ${showNav ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}>
         
+        {/* Logo Kiri */}
         <span className="text-2xl font-bold tracking-tighter pointer-events-auto cursor-pointer" style={{ fontFamily: clashDisplay }}>
           ISCAR
         </span>
 
         <div className="pointer-events-auto">
-          {/* Desktop Nav */}
+          {/* Desktop Nav (Hanya muncul di laptop/desktop) */}
           <nav className="hidden lg:flex gap-8" style={{ fontFamily: interTight }}>
             <span className="text-[0.8vw] hover:opacity-50 cursor-pointer">ABOUT</span>
             <span className="text-[0.8vw] hover:opacity-50 cursor-pointer">DIVISIONS</span>
             <span className="text-[0.8vw] hover:opacity-50 cursor-pointer">GALLERY</span>
           </nav>
 
-          {/* Mobile Hamburger (Dikasih onClick) */}
+          {/* Hamburger Icon Mobile (Hanya muncul di HP) */}
           <div 
-            onClick={() => setIsMenuOpen(true)}
+            onClick={() => setIsMenuOpen(true)} // <--- Klik untuk buka menu
             className="lg:hidden h-9 w-9 rounded-full border border-white/30 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
           >
             <div className="space-y-1">
@@ -124,16 +122,20 @@ export default function IntroUI() {
         </div>
       </div>
 
-      {/* --- LAYOUT INTRO AWAL --- */}
+
+      {/* ---------------------------------------------------------
+          4. INTRO LAYOUT (Tampilan Awal / Sebelum Explore)
+          --------------------------------------------------------- */}
       <div className={`fixed inset-0 transition-opacity duration-700 ease-out ${exploreClicked ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
         
-        {/* Mobile Intro View */}
+        {/* --- Tampilan Mobile Intro --- */}
         <div className="lg:hidden absolute inset-0 pointer-events-none">
           <div className="pointer-events-auto absolute top-6 left-6 right-6 flex items-center justify-between">
             <span className="text-3xl font-bold tracking-tight text-white" style={{ fontFamily: clashDisplay }}>ISCAR</span>
-            {/* Hamburger di intro juga dikasih onClick biar bisa dibuka dari awal */}
+            
+            {/* Hamburger di Intro awal (Bisa diklik juga) */}
             <div 
-              onClick={() => setIsMenuOpen(true)}
+              onClick={() => setIsMenuOpen(true)} // <--- Klik untuk buka menu
               className="h-9 w-9 rounded-full border border-white/30 flex items-center justify-center cursor-pointer"
             >
               <div className="space-y-1">
@@ -144,6 +146,7 @@ export default function IntroUI() {
             </div>
           </div>
 
+          {/* Judul & Tombol Explore Mobile */}
           <div className="absolute top-[38%] left-1/2 -translate-x-1/2 w-full px-6 flex flex-col items-center text-center gap-6">
             <div className="flex flex-col items-center text-white" style={{ fontFamily: interTightBold }}>
               <span className="text-2xl tracking-wider leading-6">INDEPENDENT</span>
@@ -167,9 +170,10 @@ export default function IntroUI() {
           </div>
         </div>
 
-        {/* Desktop Intro View */}
+        {/* --- Tampilan Desktop Intro --- */}
         <div className={`hidden lg:flex fixed inset-0 flex-col justify-between py-10 ${uiHidden ? "pointer-events-none" : "pointer-events-auto"}`}>
           <div className="w-full">
+            {/* Logo SVG Besar Desktop */}
             <div className="relative w-full overflow-hidden top-3">
               <div className="relative left-[7.3vw]">
                 <svg viewBox="0 0 584 126" className="w-[85.3vw] h-auto max-w-none" xmlns="http://www.w3.org/2000/svg">
@@ -178,6 +182,7 @@ export default function IntroUI() {
               </div>
             </div>
 
+            {/* Navigasi Desktop Intro */}
             <nav className="flex w-full justify-between lg:px-28 mt-4" style={{ fontFamily: interTight }}>
               <BlurText text="ABOUT" delay={400} className="text-[0.8vw]" />
               <BlurText text="DIVISIONS" delay={500} className="text-[0.8vw]" />
@@ -191,6 +196,7 @@ export default function IntroUI() {
               <BlurText text="Student Council" delay={1000} className="text-[1vw]" />
               <BlurText text="Of Abu Dzar" delay={1100} className="text-[1vw]" />
             </div>
+            {/* Tombol Explore Desktop */}
             <div className="flex justify-center pointer-events-auto">
               <button
                 disabled={exploreClicked}
