@@ -165,7 +165,7 @@ export default function IntroUI() {
             </button>
           </div>
 
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[80%] text-center text-sm text-white leading-relaxed" style={{ fontFamily: interTight }}>
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[80%] text-left text-sm text-white leading-relaxed" style={{ fontFamily: interTight }}>
             “Official representative body of Abu Dzar students. We bridge ideas, foster innovation, and create a home for every aspiring leader.”
           </div>
         </div>
